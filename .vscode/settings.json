@@ -3,6 +3,7 @@
     "compare": "cpp",
     "stm32f1xx.h": "c",
     "stddef.h": "c",
-    "mock_led_panels_io.h": "c"
+    "mock_led_panels_io.h": "c",
+    "unity_fixture.h": "c"
   }
 }

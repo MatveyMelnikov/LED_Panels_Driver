@@ -13,6 +13,10 @@ FLAGS += \
 C_INCLUDES += \
 -ICore/Inc
 
+LIBS = \
+-lm \
+-lc
+
 OBJECTS = $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
 
 all: $(TARGET)
@@ -23,7 +27,7 @@ $(BUILD_DIR)/%.o: %.c
 	$(CC) $(FLAGS) $(CFLAGS) -MD $(C_INCLUDES) -c $< -o $@
 
 $(TARGET): $(OBJECTS)
-	$(CC) $(FLAGS) $(OBJECTS) -o $(TARGET)
+	$(CC) $(FLAGS) $(LIBS) $(OBJECTS) -o $(TARGET)
 
 .PHONY = start
 start: $(TARGET)

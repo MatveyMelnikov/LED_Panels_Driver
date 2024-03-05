@@ -33,7 +33,7 @@ led_panels_status led_panels_set_pixel(
   const uint8_t pixel_y,
   const led_panels_color pixel
 );
-led_panels_status led_panels_flush(
+void led_panels_flush(
   led_panels_buffer *buffer
 );
 led_panels_status led_panels_send(led_panels_buffer *buffer);

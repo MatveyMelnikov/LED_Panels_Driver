@@ -11,7 +11,7 @@ typedef struct
 {
   int kind;
   const uint8_t * data;
-  uint8_t data_size
+  uint16_t data_size
 } expectation;
 
 enum
@@ -53,7 +53,7 @@ static void fail_when_no_room_for_expectations()
 static void record_expectation(
   const int kind,
   const uint8_t *const data,
-  const uint8_t data_size
+  const uint16_t data_size
 )
 {
   expectations[set_expectation_count].kind = kind;
@@ -81,7 +81,7 @@ static void check_data(
   char *message[sizeof(report_data_error) + 10];
 
   bool fail = false;
-  for (uint8_t i = 0; i < current_expectation->data_size; i++)
+  for (uint16_t i = 0; i < current_expectation->data_size; i++)
   {
     if (current_expectation->data[i] != data[i])
     {
