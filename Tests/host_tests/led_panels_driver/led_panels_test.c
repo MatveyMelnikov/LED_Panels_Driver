@@ -97,15 +97,17 @@ TEST(led_panels_driver, create_buffer_and_get_panels_success)
     LED_PANELS_SIZE_256,
     LED_PANELS_SIZE_64
   };
-  led_panels_buffer *buffer = led_panels_create(3, sizes);
+  led_panels_buffer *local_buffer = led_panels_create(3, sizes);
   uint16_t panel_size = 0;
   led_panels_color pixel = { 0 };
 
-  led_panels_status status = led_panels_get_pixel(buffer, 0, 7, 7, &pixel);
-  status |= led_panels_get_pixel(buffer, 1, 15, 15, &pixel);
-  status |= led_panels_get_pixel(buffer, 2, 7, 7, &pixel);
+  led_panels_status status = led_panels_get_pixel(
+    local_buffer, 0, 7, 7, &pixel
+  );
+  status |= led_panels_get_pixel(local_buffer, 1, 15, 15, &pixel);
+  status |= led_panels_get_pixel(local_buffer, 2, 7, 7, &pixel);
 
-  led_panels_destroy(buffer);
+  led_panels_destroy(local_buffer);
 
   TEST_ASSERT_EQUAL(LED_PANELS_OK, status);
 }
@@ -149,6 +151,123 @@ TEST(led_panels_driver, send_one_panel_8_data)
   status |= led_panels_set_pixel(buffer, 0, 7, 7, pixel);
 
   status |= led_panels_send(buffer);
+
+  TEST_ASSERT_EQUAL(LED_PANELS_OK, status);
+}
+
+TEST(led_panels_driver, send_one_panel_16_data)
+{
+  led_panels_size sizes[] = { LED_PANELS_SIZE_256 };
+  led_panels_buffer *local_buffer = led_panels_create(3, sizes);
+  uint8_t output_data[256 * PWM_PIXEL_SIZE];
+  memset(output_data, LED_PANELS_0_VALUE, 256 * PWM_PIXEL_SIZE);
+
+  // GRB, high bit sent at first
+  set_pwm_pixel(get_pwm_pixel(output_data, 16, 0, 0));
+  set_pwm_pixel(get_pwm_pixel(output_data, 16, 15, 0));
+  set_pwm_pixel(get_pwm_pixel(output_data, 16, 0, 15));
+  set_pwm_pixel(get_pwm_pixel(output_data, 16, 15, 15));
+
+  mock_led_panels_io_expect_send_data(output_data, sizeof(output_data));
+
+  led_panels_status status = led_panels_set_pixel(
+    local_buffer, 0, 0, 0, pixel
+  );
+  status |= led_panels_set_pixel(local_buffer, 0, 15, 0, pixel);
+  status |= led_panels_set_pixel(local_buffer, 0, 0, 15, pixel);
+  status |= led_panels_set_pixel(local_buffer, 0, 15, 15, pixel);
+
+  status |= led_panels_send(local_buffer);
+
+  TEST_ASSERT_EQUAL(LED_PANELS_OK, status);
+}
+
+TEST(led_panels_driver, send_two_panels_8_and_8_data)
+{
+  led_panels_size sizes[] = { LED_PANELS_SIZE_64, LED_PANELS_SIZE_64 };
+  led_panels_buffer *local_buffer = led_panels_create(2, sizes);
+  uint8_t output_data[128 * PWM_PIXEL_SIZE];
+  memset(output_data, LED_PANELS_0_VALUE, 128 * PWM_PIXEL_SIZE);
+
+  // GRB, high bit sent at first
+  set_pwm_pixel(get_pwm_pixel(output_data, 8, 0, 0));
+  set_pwm_pixel(get_pwm_pixel(output_data, 8, 7, 0));
+  set_pwm_pixel(get_pwm_pixel(output_data, 8, 0, 7));
+  set_pwm_pixel(get_pwm_pixel(output_data, 8, 7, 7));
+
+  set_pwm_pixel(
+    get_pwm_pixel(64 * PWM_PIXEL_SIZE + output_data, 8, 0, 0)
+  );
+  set_pwm_pixel(
+    get_pwm_pixel(64 * PWM_PIXEL_SIZE + output_data, 8, 7, 0)
+  );
+  set_pwm_pixel(
+    get_pwm_pixel(64 * PWM_PIXEL_SIZE + output_data, 8, 0, 7)
+  );
+  set_pwm_pixel(
+    get_pwm_pixel(64 * PWM_PIXEL_SIZE + output_data, 8, 7, 7)
+  );
+
+  mock_led_panels_io_expect_send_data(output_data, sizeof(output_data));
+
+  led_panels_status status = led_panels_set_pixel(
+    local_buffer, 0, 0, 0, pixel
+  );
+  status |= led_panels_set_pixel(local_buffer, 0, 7, 0, pixel);
+  status |= led_panels_set_pixel(local_buffer, 0, 0, 7, pixel);
+  status |= led_panels_set_pixel(local_buffer, 0, 7, 7, pixel);
+
+  status |= led_panels_set_pixel(local_buffer, 1, 0, 0, pixel);
+  status |= led_panels_set_pixel(local_buffer, 1, 7, 0, pixel);
+  status |= led_panels_set_pixel(local_buffer, 1, 0, 7, pixel);
+  status |= led_panels_set_pixel(local_buffer, 1, 7, 7, pixel);
+
+  status |= led_panels_send(local_buffer);
+
+  TEST_ASSERT_EQUAL(LED_PANELS_OK, status);
+}
+
+TEST(led_panels_driver, send_two_panels_8_and_16_data)
+{
+  led_panels_size sizes[] = { LED_PANELS_SIZE_64, LED_PANELS_SIZE_256 };
+  led_panels_buffer *local_buffer = led_panels_create(2, sizes);
+  uint8_t output_data[320 * PWM_PIXEL_SIZE];
+  memset(output_data, LED_PANELS_0_VALUE, 320 * PWM_PIXEL_SIZE);
+
+  // GRB, high bit sent at first
+  set_pwm_pixel(get_pwm_pixel(output_data, 8, 0, 0));
+  set_pwm_pixel(get_pwm_pixel(output_data, 8, 7, 0));
+  set_pwm_pixel(get_pwm_pixel(output_data, 8, 0, 7));
+  set_pwm_pixel(get_pwm_pixel(output_data, 8, 7, 7));
+
+  set_pwm_pixel(
+    get_pwm_pixel(64 * PWM_PIXEL_SIZE + output_data, 16, 0, 0)
+  );
+  set_pwm_pixel(
+    get_pwm_pixel(64 * PWM_PIXEL_SIZE + output_data, 16, 15, 0)
+  );
+  set_pwm_pixel(
+    get_pwm_pixel(64 * PWM_PIXEL_SIZE + output_data, 16, 0, 15)
+  );
+  set_pwm_pixel(
+    get_pwm_pixel(64 * PWM_PIXEL_SIZE + output_data, 16, 15, 15)
+  );
+
+  mock_led_panels_io_expect_send_data(output_data, sizeof(output_data));
+
+  led_panels_status status = led_panels_set_pixel(
+    local_buffer, 0, 0, 0, pixel
+  );
+  status |= led_panels_set_pixel(local_buffer, 0, 7, 0, pixel);
+  status |= led_panels_set_pixel(local_buffer, 0, 0, 7, pixel);
+  status |= led_panels_set_pixel(local_buffer, 0, 7, 7, pixel);
+
+  status |= led_panels_set_pixel(local_buffer, 1, 0, 0, pixel);
+  status |= led_panels_set_pixel(local_buffer, 1, 15, 0, pixel);
+  status |= led_panels_set_pixel(local_buffer, 1, 0, 15, pixel);
+  status |= led_panels_set_pixel(local_buffer, 1, 15, 15, pixel);
+
+  status |= led_panels_send(local_buffer);
 
   TEST_ASSERT_EQUAL(LED_PANELS_OK, status);
 }
