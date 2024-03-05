@@ -4,6 +4,9 @@
     "stm32f1xx.h": "c",
     "stddef.h": "c",
     "mock_led_panels_io.h": "c",
-    "unity_fixture.h": "c"
+    "unity_fixture.h": "c",
+    "string.h": "c",
+    "memory.h": "c",
+    "unity_config.h": "c"
   }
 }

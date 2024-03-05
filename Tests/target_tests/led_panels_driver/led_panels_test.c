@@ -1,64 +1,91 @@
 #include "unity_fixture.h"
-#include "hc06_driver.h"
-#include "hc06_io.h"
+#include "led_panels_driver.h"
 
 // Static functions ----------------------------------------------------------
 
-static void check_data(
-  const uint8_t *const expected,
-  const uint8_t *const actual,
-  const uint16_t data_size
-)
+static void delay()
 {
-  for (uint16_t i = 0; i < data_size; i++)
-    TEST_ASSERT_BYTES_EQUAL(expected[i], actual[i]);
+  int32_t count = 30000000;
+  while (count--) {
+    asm(""); // prevent optimize of this function
+  }
 }
+
+// Static variables ----------------------------------------------------------
+
+static led_panels_buffer *buffer = NULL;
 
 // Tests ---------------------------------------------------------------------
 
-TEST_GROUP(hc06_driver);
+TEST_GROUP(led_panels_driver);
 
-TEST_SETUP(hc06_driver)
+TEST_SETUP(led_panels_driver)
 {
-  hc06_create();
+  led_panels_size panels_types[] = {
+    LED_PANELS_SIZE_64
+  };
+
+  buffer = led_panels_create(1, panels_types);
 }
 
-TEST_TEAR_DOWN(hc06_driver)
+TEST_TEAR_DOWN(led_panels_driver)
 {
-  hc06_set_baudrate(HC06_9600);
-  hc06_destroy();
+  led_panels_destroy(buffer);
 }
 
-TEST(hc06_driver, check_link_success)
+TEST(led_panels_driver, show_clear_panel)
 {
-  hc06_status status = hc06_check_link();
-
-  TEST_ASSERT_EQUAL(HC06_OK, status);
+  led_panels_send(buffer);
+  delay();
 }
 
-TEST(hc06_driver, set_baud_rate_9600)
+TEST(led_panels_driver, show_red_panel)
 {
-  hc06_status status = hc06_set_baudrate(HC06_9600);
-  hc06_baudrate baudrate = hc_06_determine_baudrate();
+  led_panels_color red_pixel = (led_panels_color) {
+    .red = 1U,
+    .green = 0U,
+    .blue = 0U
+  };
 
-  TEST_ASSERT_EQUAL(HC06_OK, status);
-  TEST_ASSERT_EQUAL(HC06_9600, baudrate);
+  for (uint8_t y = 0; y < 8; y++)
+  {
+    for (uint8_t x = 0; x < 8; x++)
+      led_panels_set_pixel(buffer, 0, x, y, red_pixel);
+  }
+  led_panels_send(buffer);
+  delay();
 }
 
-TEST(hc06_driver, set_baud_rate_1200)
+TEST(led_panels_driver, show_green_panel)
 {
-  hc06_status status = hc06_set_baudrate(HC06_1200);
-  hc06_baudrate baudrate = hc_06_determine_baudrate();
+  led_panels_color green_pixel = (led_panels_color) {
+    .red = 0U,
+    .green = 1U,
+    .blue = 0U
+  };
 
-  TEST_ASSERT_EQUAL(HC06_OK, status);
-  TEST_ASSERT_EQUAL(HC06_1200, baudrate);
+  for (uint8_t y = 0; y < 8; y++)
+  {
+    for (uint8_t x = 0; x < 8; x++)
+      led_panels_set_pixel(buffer, 0, x, y, green_pixel);
+  }
+  led_panels_send(buffer);
+  delay();
 }
 
-TEST(hc06_driver, set_baud_rate_460800)
+TEST(led_panels_driver, show_blue_panel)
 {
-  hc06_status status = hc06_set_baudrate(HC06_460800);
-  hc06_baudrate baudrate = hc_06_determine_baudrate();
+  led_panels_color blue_pixel = (led_panels_color) {
+    .red = 0U,
+    .green = 0U,
+    .blue = 1U
+  };
 
-  TEST_ASSERT_EQUAL(HC06_OK, status);
-  TEST_ASSERT_EQUAL(HC06_460800, baudrate);
+  for (uint8_t y = 0; y < 8; y++)
+  {
+    for (uint8_t x = 0; x < 8; x++)
+      led_panels_set_pixel(buffer, 0, x, y, blue_pixel);
+  }
+  led_panels_send(buffer);
+  delay();
 }

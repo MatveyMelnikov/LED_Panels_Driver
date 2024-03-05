@@ -238,7 +238,6 @@ void led_panels_flush(led_panels_buffer *buffer)
 
 led_panels_status led_panels_send(led_panels_buffer *buffer)
 {
-
   return led_panels_io_send_data(
     buffer->pwm_data,
     get_pwm_data_size(buffer)

@@ -32,10 +32,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define PWM_1_VALUE 60U
-#define PWM_0_VALUE 30U
-#define PWM_RESET_VALUE 0U
-#define PWM_DATA_SIZE 1586
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -47,6 +44,8 @@
 TIM_HandleTypeDef htim2;
 DMA_HandleTypeDef hdma_tim2_ch1;
 
+UART_HandleTypeDef huart1;
+
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -56,11 +55,9 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_TIM2_Init(void);
+static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
-void fill_pwm_data(
-  uint8_t *pwm_data,
-  uint8_t *color
-);
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -98,44 +95,13 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_TIM2_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-
-  static uint8_t color_data[64][3]; // RGB
-  static uint8_t pwm_data[PWM_DATA_SIZE]; // bits + reset (50 us)
-
-  // Form simple colors
-  for (uint8_t i = 0; i < 64; i++)
-  {
-    color_data[i][0] = 10U;
-    color_data[i][1] = 0x0U;
-    color_data[i][2] = 0x0U;
-  }
-
-  // Convert to DMA data
-  for (uint8_t i = 0; i < 64; i++)
-  {
-    //pwm_data[i] = (color_data)
-    fill_pwm_data(pwm_data + (i * 24), color_data[i]);
-  }
-  
-  memset(
-    pwm_data + (PWM_DATA_SIZE - 50),
-    PWM_RESET_VALUE,
-    50 * sizeof(uint8_t)
-  ); // reset (above 50 us)
-
-  // send data to ARR (counter period)
-  HAL_TIM_PWM_Start_DMA(
-    &htim2,
-    TIM_CHANNEL_1,
-    (uint32_t *)pwm_data,
-    PWM_DATA_SIZE
-  );
 
   while (1)
   {
@@ -235,6 +201,39 @@ static void MX_TIM2_Init(void)
 }
 
 /**
+  * @brief USART1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART1_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART1_Init 0 */
+
+  /* USER CODE END USART1_Init 0 */
+
+  /* USER CODE BEGIN USART1_Init 1 */
+
+  /* USER CODE END USART1_Init 1 */
+  huart1.Instance = USART1;
+  huart1.Init.BaudRate = 115200;
+  huart1.Init.WordLength = UART_WORDLENGTH_8B;
+  huart1.Init.StopBits = UART_STOPBITS_1;
+  huart1.Init.Parity = UART_PARITY_NONE;
+  huart1.Init.Mode = UART_MODE_TX_RX;
+  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART1_Init 2 */
+
+  /* USER CODE END USART1_Init 2 */
+
+}
+
+/**
   * Enable DMA controller clock
   */
 static void MX_DMA_Init(void)
@@ -269,24 +268,6 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
-// RGB to GRB (MSB)
-void fill_pwm_data(
-  uint8_t *pwm_data,
-  uint8_t *color
-)
-{
-  uint8_t red = color[0];
-  uint8_t green = color[1];
-  uint8_t blue = color[2];
-
-  for (uint8_t i = 0; i < 8; i++)
-    *(pwm_data + i) = (bool)(green & (1<< (7 - i))) ? PWM_1_VALUE : PWM_0_VALUE;
-  for (uint8_t i = 0; i < 8; i++)
-    *(pwm_data + (i + 8)) = (bool)(red & (1 << (7 - i))) ? PWM_1_VALUE : PWM_0_VALUE;
-  for (uint8_t i = 0; i < 8; i++)
-    *(pwm_data + (i + 16)) = (bool)(blue & (1 << (7 - i))) ? PWM_1_VALUE : PWM_0_VALUE;
-}
 
 void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim)
 {

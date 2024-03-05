@@ -1,0 +1,96 @@
+ARM GAS  /tmp/cc1raYte.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.arch armv7-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"led_panels_test_runner.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.file 1 "Tests/target_tests/led_panels_driver/led_panels_test_runner.c"
+  18              		.section	.text.TEST_led_panels_driver_GROUP_RUNNER,"ax",%progbits
+  19              		.align	1
+  20              		.global	TEST_led_panels_driver_GROUP_RUNNER
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	TEST_led_panels_driver_GROUP_RUNNER:
+  26              	.LFB0:
+   1:Tests/target_tests/led_panels_driver/led_panels_test_runner.c **** #include "unity_fixture.h"
+   2:Tests/target_tests/led_panels_driver/led_panels_test_runner.c **** 
+   3:Tests/target_tests/led_panels_driver/led_panels_test_runner.c **** TEST_GROUP_RUNNER(led_panels_driver)
+   4:Tests/target_tests/led_panels_driver/led_panels_test_runner.c **** {
+  27              		.loc 1 4 1 view -0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 0
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31 0000 08B5     		push	{r3, lr}
+  32              	.LCFI0:
+  33              		.cfi_def_cfa_offset 8
+  34              		.cfi_offset 3, -8
+  35              		.cfi_offset 14, -4
+  36              	.LBB2:
+   5:Tests/target_tests/led_panels_driver/led_panels_test_runner.c ****   RUN_TEST_CASE(led_panels_driver, show_clear_panel);
+  37              		.loc 1 5 3 view .LVU1
+  38              		.loc 1 5 3 view .LVU2
+  39 0002 FFF7FEFF 		bl	TEST_led_panels_driver_show_clear_panel_run
+  40              	.LVL0:
+  41              	.LBE2:
+  42              		.loc 1 5 53 discriminator 1 view .LVU3
+  43              	.LBB3:
+   6:Tests/target_tests/led_panels_driver/led_panels_test_runner.c ****   RUN_TEST_CASE(led_panels_driver, show_red_panel);
+  44              		.loc 1 6 3 view .LVU4
+  45              		.loc 1 6 3 view .LVU5
+  46 0006 FFF7FEFF 		bl	TEST_led_panels_driver_show_red_panel_run
+  47              	.LVL1:
+  48              	.LBE3:
+  49              		.loc 1 6 51 discriminator 1 view .LVU6
+  50              	.LBB4:
+   7:Tests/target_tests/led_panels_driver/led_panels_test_runner.c ****   RUN_TEST_CASE(led_panels_driver, show_green_panel);
+  51              		.loc 1 7 3 view .LVU7
+ARM GAS  /tmp/cc1raYte.s 			page 2
+
+
+  52              		.loc 1 7 3 view .LVU8
+  53 000a FFF7FEFF 		bl	TEST_led_panels_driver_show_green_panel_run
+  54              	.LVL2:
+  55              	.LBE4:
+  56              		.loc 1 7 53 discriminator 1 view .LVU9
+  57              	.LBB5:
+   8:Tests/target_tests/led_panels_driver/led_panels_test_runner.c ****   RUN_TEST_CASE(led_panels_driver, show_blue_panel);
+  58              		.loc 1 8 3 view .LVU10
+  59              		.loc 1 8 3 view .LVU11
+  60 000e FFF7FEFF 		bl	TEST_led_panels_driver_show_blue_panel_run
+  61              	.LVL3:
+  62              	.LBE5:
+  63              		.loc 1 8 52 discriminator 1 view .LVU12
+   9:Tests/target_tests/led_panels_driver/led_panels_test_runner.c **** }...
+  64              		.loc 1 9 1 is_stmt 0 view .LVU13
+  65 0012 08BD     		pop	{r3, pc}
+  66              		.cfi_endproc
+  67              	.LFE0:
+  69              		.text
+  70              	.Letext0:
+ARM GAS  /tmp/cc1raYte.s 			page 3
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 led_panels_test_runner.c
+     /tmp/cc1raYte.s:19     .text.TEST_led_panels_driver_GROUP_RUNNER:00000000 $t
+     /tmp/cc1raYte.s:25     .text.TEST_led_panels_driver_GROUP_RUNNER:00000000 TEST_led_panels_driver_GROUP_RUNNER
+
+UNDEFINED SYMBOLS
+TEST_led_panels_driver_show_clear_panel_run
+TEST_led_panels_driver_show_red_panel_run
+TEST_led_panels_driver_show_green_panel_run
+TEST_led_panels_driver_show_blue_panel_run

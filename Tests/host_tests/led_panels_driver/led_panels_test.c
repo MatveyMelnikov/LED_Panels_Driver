@@ -134,8 +134,13 @@ TEST(led_panels_driver, create_buffer_and_get_panels_fail)
 
 TEST(led_panels_driver, send_one_panel_8_data)
 {
-  uint8_t output_data[64 * PWM_PIXEL_SIZE];
+  uint8_t output_data[64 * PWM_PIXEL_SIZE + 50];
   memset(output_data, LED_PANELS_0_VALUE, 64 * PWM_PIXEL_SIZE);
+  memset(
+    output_data + 64 * PWM_PIXEL_SIZE,
+    LED_PANELS_RESET_VALUE,
+    50
+  );
 
   // GRB, high bit sent at first
   set_pwm_pixel(get_pwm_pixel(output_data, 8, 0, 0));
@@ -159,8 +164,13 @@ TEST(led_panels_driver, send_one_panel_16_data)
 {
   led_panels_size sizes[] = { LED_PANELS_SIZE_256 };
   led_panels_buffer *local_buffer = led_panels_create(3, sizes);
-  uint8_t output_data[256 * PWM_PIXEL_SIZE];
+  uint8_t output_data[256 * PWM_PIXEL_SIZE + 50];
   memset(output_data, LED_PANELS_0_VALUE, 256 * PWM_PIXEL_SIZE);
+  memset(
+    output_data + 256 * PWM_PIXEL_SIZE,
+    LED_PANELS_RESET_VALUE,
+    50
+  );
 
   // GRB, high bit sent at first
   set_pwm_pixel(get_pwm_pixel(output_data, 16, 0, 0));
@@ -179,6 +189,8 @@ TEST(led_panels_driver, send_one_panel_16_data)
 
   status |= led_panels_send(local_buffer);
 
+  led_panels_destroy(local_buffer);
+
   TEST_ASSERT_EQUAL(LED_PANELS_OK, status);
 }
 
@@ -186,8 +198,13 @@ TEST(led_panels_driver, send_two_panels_8_and_8_data)
 {
   led_panels_size sizes[] = { LED_PANELS_SIZE_64, LED_PANELS_SIZE_64 };
   led_panels_buffer *local_buffer = led_panels_create(2, sizes);
-  uint8_t output_data[128 * PWM_PIXEL_SIZE];
+  uint8_t output_data[128 * PWM_PIXEL_SIZE + 50];
   memset(output_data, LED_PANELS_0_VALUE, 128 * PWM_PIXEL_SIZE);
+    memset(
+    output_data + 128 * PWM_PIXEL_SIZE,
+    LED_PANELS_RESET_VALUE,
+    50
+  );
 
   // GRB, high bit sent at first
   set_pwm_pixel(get_pwm_pixel(output_data, 8, 0, 0));
@@ -224,6 +241,8 @@ TEST(led_panels_driver, send_two_panels_8_and_8_data)
 
   status |= led_panels_send(local_buffer);
 
+  led_panels_destroy(local_buffer);
+
   TEST_ASSERT_EQUAL(LED_PANELS_OK, status);
 }
 
@@ -231,8 +250,13 @@ TEST(led_panels_driver, send_two_panels_8_and_16_data)
 {
   led_panels_size sizes[] = { LED_PANELS_SIZE_64, LED_PANELS_SIZE_256 };
   led_panels_buffer *local_buffer = led_panels_create(2, sizes);
-  uint8_t output_data[320 * PWM_PIXEL_SIZE];
+  uint8_t output_data[320 * PWM_PIXEL_SIZE + 50];
   memset(output_data, LED_PANELS_0_VALUE, 320 * PWM_PIXEL_SIZE);
+  memset(
+    output_data + 320 * PWM_PIXEL_SIZE,
+    LED_PANELS_RESET_VALUE,
+    50
+  );
 
   // GRB, high bit sent at first
   set_pwm_pixel(get_pwm_pixel(output_data, 8, 0, 0));
@@ -268,6 +292,8 @@ TEST(led_panels_driver, send_two_panels_8_and_16_data)
   status |= led_panels_set_pixel(local_buffer, 1, 15, 15, pixel);
 
   status |= led_panels_send(local_buffer);
+
+  led_panels_destroy(local_buffer);
 
   TEST_ASSERT_EQUAL(LED_PANELS_OK, status);
 }

@@ -1,9 +1,9 @@
 #include "unity_fixture.h"
 
-TEST_GROUP_RUNNER(hc06_driver)
+TEST_GROUP_RUNNER(led_panels_driver)
 {
-  RUN_TEST_CASE(hc06_driver, check_link_success);
-  RUN_TEST_CASE(hc06_driver, set_baud_rate_9600);
-  RUN_TEST_CASE(hc06_driver, set_baud_rate_1200);
-  RUN_TEST_CASE(hc06_driver, set_baud_rate_460800);
+  RUN_TEST_CASE(led_panels_driver, show_clear_panel);
+  RUN_TEST_CASE(led_panels_driver, show_red_panel);
+  RUN_TEST_CASE(led_panels_driver, show_green_panel);
+  RUN_TEST_CASE(led_panels_driver, show_blue_panel);
 }

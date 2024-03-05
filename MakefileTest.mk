@@ -5,7 +5,7 @@ CFLAGS = -DTEST -DUNITY_INCLUDE_CONFIG_H
 TESTS_DIR = Tests
 UNITY_DIR = External/Unity-2.5.2
 LED_PANELS_DRIVER = External/led_panels_driver
-FOR_TARGET = N
+FOR_TARGET = Y
 
 C_INCLUDES += \
 -I$(LED_PANELS_DRIVER)/Inc \
@@ -25,8 +25,7 @@ C_SOURCES += \
 $(TESTS_DIR)/target_tests.c \
 $(TESTS_DIR)/target_tests/led_panels_driver/led_panels_test_runner.c \
 $(TESTS_DIR)/target_tests/led_panels_driver/led_panels_test.c \
-$(LED_PANELS_DRIVER)/Src/led_panels_io.c \
-$(LED_PANELS_DRIVER)/Src/led_panels_time.c
+$(LED_PANELS_DRIVER)/Src/led_panels_io.c
 
 include MakefileTestTarget.mk
 else
