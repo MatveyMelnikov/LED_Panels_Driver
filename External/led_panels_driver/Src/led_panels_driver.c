@@ -93,7 +93,10 @@ static uint16_t get_pixel_offset(
   uint16_t side_size = get_side_size(
     GET_PANEL_SIZE(panel_index, panels_sizes)
   );
-  return (x + y * side_size) * PWM_PIXEL_SIZE;
+
+  // Correction for LED tape trajectory - every even line is inverted
+  uint16_t pixel_pos = (y % 2 == 0 ? (7 - x) : x) + y * side_size;
+  return pixel_pos * PWM_PIXEL_SIZE;
 }
 
 static uint16_t get_pwm_data_size(led_panels_buffer *buffer)
@@ -104,7 +107,7 @@ static uint16_t get_pwm_data_size(led_panels_buffer *buffer)
   for (; i < buffer->panels_num; i++)
     result += GET_PANEL_SIZE(i, buffer->panels_sizes);
 
-  return result * 3 * 8;
+  return result * 3 * 8 + 50; 
 }
 
 static led_panels_status check_bounds(
@@ -232,7 +235,7 @@ void led_panels_flush(led_panels_buffer *buffer)
   memset(
     buffer->pwm_data,
     LED_PANELS_0_VALUE,
-    get_pwm_data_size(buffer)
+    get_pwm_data_size(buffer) - 50
   );
 }
 

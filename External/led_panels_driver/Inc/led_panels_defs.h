@@ -8,21 +8,6 @@ enum
   LED_PANELS_RESET_VALUE = 0U
 };
 
-// typedef enum
-// {
-//   HC06_1200 = 0x0U,
-//   HC06_2400,
-//   HC06_4800,
-//   HC06_9600,
-//   HC06_19200,
-//   HC06_38400,
-//   HC06_57600,
-//   HC06_115200,
-//   HC06_230400,
-//   HC06_460800, // stm32f103 max baudrate is 500 kbits/s
-//   HC06_UNDEFINED
-// } hc06_baudrate;
-
 typedef enum
 {
   LED_PANELS_SIZE_64 = 64U,
