@@ -122,9 +122,9 @@ static led_panels_status check_bounds(
   );
 
   if (panel_index >= buffer->panels_num)
-    return LED_PANELS_ERROR;
+    return LED_PANELS_BOUNDS;
   if (x >= panel_side_size || y >= panel_side_size)
-    return LED_PANELS_ERROR;
+    return LED_PANELS_BOUNDS;
 
   return LED_PANELS_OK;
 }
@@ -139,6 +139,7 @@ led_panels_buffer *led_panels_create(
   uint16_t pixels_num = 0U;
 
   led_panels_buffer *buffer = malloc(sizeof(led_panels_buffer));
+  buffer->is_locking = false;
   buffer->panels_num = panels_num;
   buffer->panels_sizes = calloc(panels_num, sizeof(led_panels_size));
   memcpy(
@@ -210,6 +211,8 @@ led_panels_status led_panels_set_pixel(
   );
   if (status)
     return status;
+  if (buffer->is_locking)
+    return LED_PANELS_BUSY;
 
   uint16_t panel_offset = get_panel_offset(
     panel_index,
@@ -230,19 +233,37 @@ led_panels_status led_panels_set_pixel(
   return LED_PANELS_OK;
 }
 
-void led_panels_flush(led_panels_buffer *buffer)
+led_panels_status led_panels_flush(led_panels_buffer *buffer)
 {
+  if (buffer->is_locking)
+    return LED_PANELS_BUSY;
+
   memset(
     buffer->pwm_data,
     LED_PANELS_0_VALUE,
     get_pwm_data_size(buffer) - 50
   );
+
+  return LED_PANELS_OK;
 }
 
 led_panels_status led_panels_send(led_panels_buffer *buffer)
 {
-  return led_panels_io_send_data(
+  if (buffer->is_locking)
+    return LED_PANELS_BUSY;
+
+  led_panels_status status = led_panels_io_send_data(
     buffer->pwm_data,
     get_pwm_data_size(buffer)
   );
+
+  if (status == LED_PANELS_OK)
+    buffer->is_locking = true;
+
+  return status;
+}
+
+void led_panels_send_complete(led_panels_buffer *buffer)
+{
+  buffer->is_locking = false;
 }

@@ -1,6 +1,8 @@
 #ifndef LED_PANELS_DEFS_H
 #define LED_PANELS_DEFS_H
 
+#include <stdbool.h>
+
 enum
 {
   LED_PANELS_1_VALUE = 60U,
@@ -26,6 +28,7 @@ typedef struct
   uint8_t *pwm_data;
   uint16_t panels_num;
   led_panels_size *panels_sizes;
+  bool is_locking;
 } led_panels_buffer;
 
 typedef enum
@@ -34,7 +37,8 @@ typedef enum
   LED_PANELS_ERROR = 0x01U,
   LED_PANELS_BUSY = 0x02U,
   LED_PANELS_TIMEOUT_ERROR = 0x03U,
-  LED_PANELS_OVERFLOW = 0x04U
+  LED_PANELS_OVERFLOW = 0x04U,
+  LED_PANELS_BOUNDS = 0x05U
 } led_panels_status;
 
 #endif

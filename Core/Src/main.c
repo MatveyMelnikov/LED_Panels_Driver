@@ -59,6 +59,8 @@ static void MX_TIM2_Init(void);
 static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
+led_panels_buffer *buffer = NULL;
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -99,16 +101,110 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 
+  static led_panels_color red_pixel = (led_panels_color) {
+    .red = 1U,
+    .green = 0U,
+    .blue = 0U
+  };
+  // static led_panels_color green_pixel = (led_panels_color) {
+  //   .red = 0U,
+  //   .green = 1U,
+  //   .blue = 0U
+  // };
+  // static led_panels_color blue_pixel = (led_panels_color) {
+  //   .red = 0U,
+  //   .green = 0U,
+  //   .blue = 1U
+  // };
+  led_panels_size sizes[] = {
+    LED_PANELS_SIZE_64,
+    LED_PANELS_SIZE_64
+  };
+  buffer = led_panels_create(2, sizes);
+
+  // for (uint8_t y = 0; y < 8; y++)
+  // {
+  //   for (uint8_t x = 0; x < 8; x++)
+  //   {
+  //     if (y < 4)
+  //     {
+  //       led_panels_set_pixel(
+  //         buffer,
+  //         0,
+  //         x,
+  //         y, 
+  //         x / 4 == 0 ? red_pixel : green_pixel
+  //       );
+  //       led_panels_set_pixel(
+  //         buffer,
+  //         1,
+  //         x,
+  //         y, 
+  //         x / 4 == 0 ? green_pixel : blue_pixel
+  //       );
+  //     }
+  //     else
+  //     {
+  //       led_panels_set_pixel(
+  //         buffer,
+  //         0,
+  //         x,
+  //         y, 
+  //         x / 4 == 0 ? green_pixel : red_pixel
+  //       );
+  //       led_panels_set_pixel(
+  //         buffer,
+  //         1,
+  //         x,
+  //         y, 
+  //         x / 4 == 0 ? blue_pixel : green_pixel
+  //       );
+  //     }
+  //   }
+  // }
+
+  // led_panels_send(buffer);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+  uint8_t x = 0;
+  uint8_t y = 0;
+  uint8_t z = 0;
+
+  led_panels_set_pixel(buffer, 0, 0, 0, red_pixel);
+  led_panels_send(buffer);
 
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
+    led_panels_status status = led_panels_flush(buffer);
+    if (status == LED_PANELS_OK)
+    {
+      led_panels_set_pixel(buffer, z, x, y, red_pixel);
+
+      x++;
+      if (x > 7)
+      {
+        x = 0;
+        y++;
+      }
+      if (y > 7)
+      {
+        y = 0;
+        z++;
+      }
+      if (z > 1)
+        z = 0;
+
+      led_panels_send(buffer);
+      HAL_Delay(30);
+    }
   }
   /* USER CODE END 3 */
 }
@@ -284,6 +380,7 @@ void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim)
 {
 	HAL_TIM_PWM_Stop_DMA(&htim2, TIM_CHANNEL_1);
   htim2.Instance->CCR1 = 0; // period
+  led_panels_send_complete(buffer);
 }
 
 /* USER CODE END 4 */
