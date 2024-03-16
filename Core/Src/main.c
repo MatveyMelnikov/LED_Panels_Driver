@@ -101,110 +101,37 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 
-  static led_panels_color red_pixel = (led_panels_color) {
-    .red = 1U,
-    .green = 0U,
-    .blue = 0U
+  static led_panels_color pixel = (led_panels_color) {
+    .red = 4U,
+    .green = 4U,
+    .blue = 4U
   };
-  // static led_panels_color green_pixel = (led_panels_color) {
-  //   .red = 0U,
-  //   .green = 1U,
-  //   .blue = 0U
-  // };
-  // static led_panels_color blue_pixel = (led_panels_color) {
-  //   .red = 0U,
-  //   .green = 0U,
-  //   .blue = 1U
-  // };
-  led_panels_size sizes[] = {
-    LED_PANELS_SIZE_64,
-    LED_PANELS_SIZE_64
-  };
+  led_panels_size sizes[] = { LED_PANELS_SIZE_64, LED_PANELS_SIZE_64 };
   buffer = led_panels_create(2, sizes);
 
-  // for (uint8_t y = 0; y < 8; y++)
-  // {
-  //   for (uint8_t x = 0; x < 8; x++)
-  //   {
-  //     if (y < 4)
-  //     {
-  //       led_panels_set_pixel(
-  //         buffer,
-  //         0,
-  //         x,
-  //         y, 
-  //         x / 4 == 0 ? red_pixel : green_pixel
-  //       );
-  //       led_panels_set_pixel(
-  //         buffer,
-  //         1,
-  //         x,
-  //         y, 
-  //         x / 4 == 0 ? green_pixel : blue_pixel
-  //       );
-  //     }
-  //     else
-  //     {
-  //       led_panels_set_pixel(
-  //         buffer,
-  //         0,
-  //         x,
-  //         y, 
-  //         x / 4 == 0 ? green_pixel : red_pixel
-  //       );
-  //       led_panels_set_pixel(
-  //         buffer,
-  //         1,
-  //         x,
-  //         y, 
-  //         x / 4 == 0 ? blue_pixel : green_pixel
-  //       );
-  //     }
-  //   }
-  // }
+  for (uint8_t y = 0; y < 8; y++)
+  {
+    for (uint8_t x = 0; x < 8; x++)
+      led_panels_set_pixel(buffer, 0, x, y, pixel);
+  }
+  for (uint8_t y = 0; y < 8; y++)
+  {
+    for (uint8_t x = 0; x < 8; x++)
+      led_panels_set_pixel(buffer, 1, x, y, pixel);
+  }
 
-  // led_panels_send(buffer);
+  led_panels_send(buffer);
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  uint8_t x = 0;
-  uint8_t y = 0;
-  uint8_t z = 0;
-
-  led_panels_set_pixel(buffer, 0, 0, 0, red_pixel);
-  led_panels_send(buffer);
-
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-
-    led_panels_status status = led_panels_flush(buffer);
-    if (status == LED_PANELS_OK)
-    {
-      led_panels_set_pixel(buffer, z, x, y, red_pixel);
-
-      x++;
-      if (x > 7)
-      {
-        x = 0;
-        y++;
-      }
-      if (y > 7)
-      {
-        y = 0;
-        z++;
-      }
-      if (z > 1)
-        z = 0;
-
-      led_panels_send(buffer);
-      HAL_Delay(30);
-    }
   }
   /* USER CODE END 3 */
 }

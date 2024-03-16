@@ -123,11 +123,11 @@ TEST(led_panels_driver, create_buffer_and_get_panels_fail)
   led_panels_color pixel = { 0 };
 
   led_panels_status status = led_panels_get_pixel(buffer, 0, 8, 7, &pixel);
-  TEST_ASSERT_EQUAL(LED_PANELS_ERROR, status);
+  TEST_ASSERT_EQUAL(LED_PANELS_BOUNDS, status);
   status = led_panels_get_pixel(buffer, 0, 15, 20, &pixel);
-  TEST_ASSERT_EQUAL(LED_PANELS_ERROR, status);
+  TEST_ASSERT_EQUAL(LED_PANELS_BOUNDS, status);
   status = led_panels_get_pixel(buffer, 4, 4, 1, &pixel);
-  TEST_ASSERT_EQUAL(LED_PANELS_ERROR, status);
+  TEST_ASSERT_EQUAL(LED_PANELS_BOUNDS, status);
 
   led_panels_destroy(buffer);
 }
@@ -163,7 +163,7 @@ TEST(led_panels_driver, send_one_panel_8_data)
 TEST(led_panels_driver, send_one_panel_16_data)
 {
   led_panels_size sizes[] = { LED_PANELS_SIZE_256 };
-  led_panels_buffer *local_buffer = led_panels_create(3, sizes);
+  led_panels_buffer *local_buffer = led_panels_create(1, sizes);
   uint8_t output_data[256 * PWM_PIXEL_SIZE + 50];
   memset(output_data, LED_PANELS_0_VALUE, 256 * PWM_PIXEL_SIZE);
   memset(
