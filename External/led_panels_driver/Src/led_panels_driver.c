@@ -165,6 +165,8 @@ led_panels_buffer *led_panels_create(
 
 void led_panels_destroy(led_panels_buffer *buffer)
 {
+  if (buffer == NULL)
+    return;
   free(buffer->panels_sizes);
   free(buffer->pwm_data);
   free(buffer);
