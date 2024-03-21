@@ -482,7 +482,8 @@ led_panels_status led_panels_send(led_panels_buffer *buffer)
 
 void led_panels_send_complete(led_panels_buffer *buffer)
 {
-  if (buffer->transmit_index >= buffer->pixel_data_size - 53)
+  if (buffer->transmit_index >= buffer->pixel_data_size - 50)
+  //if (buffer->transmit_index >= 6)
   {
     led_panels_io_stop_sending_data();
     buffer->is_locking = false;
@@ -492,6 +493,12 @@ void led_panels_send_complete(led_panels_buffer *buffer)
     return;
   }
 
+  //led_panels_io_reset();
+  // led_panels_io_send_data(
+  //   buffer->pwm_data,
+  //   96 * sizeof(uint8_t)
+  // );
+
   // Second part of pwm data
   set_pixels_to_pwm_data(
     buffer->pwm_data + 48,
@@ -499,17 +506,13 @@ void led_panels_send_complete(led_panels_buffer *buffer)
     &buffer->transmit_index
   );
 
-  led_panels_io_send_data(
-    buffer->pwm_data,
-    96 * sizeof(uint8_t)
-  );
-
   test++;
 }
 
 void led_panels_half_send_complete(led_panels_buffer *buffer)
 {
-  if (buffer->transmit_index >= buffer->pixel_data_size - 53)
+  if (buffer->transmit_index >= buffer->pixel_data_size - 50)
+  //if (buffer->transmit_index >= 6)
     return;
 
   // First part of pwm data

@@ -49,6 +49,7 @@ UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 TIM_HandleTypeDef *led_panels_tim = &htim2;
+DMA_HandleTypeDef *led_panels_dma = &hdma_tim2_ch1;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -102,9 +103,9 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   static led_panels_color pixel = (led_panels_color) {
-    .red = 8U,
-    .green = 8U,
-    .blue = 8U
+    .red = 9U,
+    .green = 0U,
+    .blue = 0U
   };
   led_panels_size sizes[] = { LED_PANELS_SIZE_64 };
   buffer = led_panels_create(1, sizes);

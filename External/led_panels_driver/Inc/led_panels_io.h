@@ -10,5 +10,6 @@ led_panels_status led_panels_io_send_data(
 );
 
 void led_panels_io_stop_sending_data(void);
+void led_panels_io_reset(void);
 
 #endif
