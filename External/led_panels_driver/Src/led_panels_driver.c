@@ -20,6 +20,14 @@ typedef struct
 #define GET_PANEL_SIZE(index, sizes) \
   (uint16_t)(sizes[index])
 
+// Programming manual stm32f10xxx (pg. 28)
+// bit_word_offset = (byte_offset x 32) + (bit_number x 4)
+// bit_word_addr = bit_band_base + bit_word_offset
+#define GET_BIT(addr, bit_num) \
+  (volatile uint32_t*)( \
+    0x22000000 + (((uint32_t)(addr) & 0xfffff) << 5) + ((bit_num) << 2) \
+  )
+
 // Static variables ----------------------------------------------------------
 
 // Static functions ----------------------------------------------------------
@@ -27,12 +35,12 @@ typedef struct
 __attribute__((always_inline))
 inline static void convert_color_channel_to_pwm_data(
   uint8_t *const pwm_data,
-  const uint8_t color_channel // 4 bits
+  volatile uint32_t * color_channel // first bit of channel (4 bits, bit banding)
 )
 {
   for (uint8_t i = 0; i < 4; i++)
   {
-    *(pwm_data + 4 + i) = (bool)(color_channel & (1 << (3 - i))) ? 
+    *(pwm_data + 4 + i) = (bool)(*(color_channel - i)) ? 
       LED_PANELS_1_VALUE : LED_PANELS_0_VALUE;
   }
 }
@@ -49,29 +57,29 @@ inline static void set_pixels_to_pwm_data(
   // first pixel
   convert_color_channel_to_pwm_data(
     pwm_data,
-    *current_pixels & 0x0f
+    GET_BIT(current_pixels, 3)
   ); // g
   convert_color_channel_to_pwm_data(
     pwm_data + 8,
-    *current_pixels >> 4
+    GET_BIT(current_pixels, 7)
   ); // r
   convert_color_channel_to_pwm_data(
     pwm_data + 16,
-    *(current_pixels + 1) >> 4
+    GET_BIT(current_pixels + 1, 7)
   ); // b
 
   // second pixel
   convert_color_channel_to_pwm_data(
     pwm_data + 24,
-    *(current_pixels + 2) >> 4
+    GET_BIT(current_pixels + 2, 7)
   ); // g
   convert_color_channel_to_pwm_data(
     pwm_data + 32,
-    *(current_pixels + 1) & 0x0f
+    GET_BIT(current_pixels + 1, 3)
   ); // r
   convert_color_channel_to_pwm_data(
     pwm_data + 40,
-    *(current_pixels + 2) & 0x0f
+   GET_BIT(current_pixels + 2, 3)
   ); // b
 
   *index += 3;

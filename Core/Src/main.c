@@ -138,7 +138,6 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  //led_panels_send(buffer);
   uint32_t tick = HAL_GetTick();
 
   led_panels_send(front_buffer);
