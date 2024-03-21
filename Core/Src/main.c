@@ -102,12 +102,12 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   static led_panels_color pixel = (led_panels_color) {
-    .red = 4U,
-    .green = 4U,
-    .blue = 4U
+    .red = 8U,
+    .green = 8U,
+    .blue = 8U
   };
-  led_panels_size sizes[] = { LED_PANELS_SIZE_64, LED_PANELS_SIZE_64 };
-  buffer = led_panels_create(2, sizes);
+  led_panels_size sizes[] = { LED_PANELS_SIZE_64 };
+  buffer = led_panels_create(1, sizes);
 
   for (uint8_t y = 0; y < 8; y++)
   {
@@ -305,9 +305,14 @@ static void MX_GPIO_Init(void)
 
 void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim)
 {
-	HAL_TIM_PWM_Stop_DMA(&htim2, TIM_CHANNEL_1);
-  htim2.Instance->CCR1 = 0; // period
+	// HAL_TIM_PWM_Stop_DMA(&htim2, TIM_CHANNEL_1);
+  // htim2.Instance->CCR1 = 0; // period
   led_panels_send_complete(buffer);
+}
+
+void HAL_TIM_PWM_PulseFinishedHalfCpltCallback(TIM_HandleTypeDef *htim)
+{
+  led_panels_half_send_complete(buffer);
 }
 
 /* USER CODE END 4 */

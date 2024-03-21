@@ -29,5 +29,6 @@ led_panels_status led_panels_flush(
 led_panels_status led_panels_send(led_panels_buffer *buffer);
 // Called in the end of transfer handler
 void led_panels_send_complete(led_panels_buffer *buffer);
+void led_panels_half_send_complete(led_panels_buffer *buffer);
 
 #endif
