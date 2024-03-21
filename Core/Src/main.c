@@ -60,13 +60,12 @@ static void MX_TIM2_Init(void);
 static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
-led_panels_buffer *buffer = NULL;
-
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+static led_panels_buffer *front_buffer = NULL;
+static led_panels_buffer *back_buffer = NULL;
 /* USER CODE END 0 */
 
 /**
@@ -102,37 +101,64 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 
-  static led_panels_color pixel = (led_panels_color) {
-    .red = 9U,
+  static led_panels_color pixel_a = (led_panels_color) {
+    .red = 8U,
     .green = 0U,
     .blue = 0U
   };
-  led_panels_size sizes[] = { LED_PANELS_SIZE_64 };
-  buffer = led_panels_create(1, sizes);
+  static led_panels_color pixel_b = (led_panels_color) {
+    .red = 0U,
+    .green = 0U,
+    .blue = 8U
+  };
+  led_panels_size sizes[] = {
+    LED_PANELS_SIZE_64,
+    LED_PANELS_SIZE_64,
+    LED_PANELS_SIZE_64,
+    LED_PANELS_SIZE_64,
+    LED_PANELS_SIZE_64,
+    LED_PANELS_SIZE_64,
+    LED_PANELS_SIZE_64,
+    LED_PANELS_SIZE_64,
+    LED_PANELS_SIZE_64
+  };
+  front_buffer = led_panels_create(9, sizes);
+  back_buffer = led_panels_create(9, sizes);
 
   for (uint8_t y = 0; y < 8; y++)
   {
     for (uint8_t x = 0; x < 8; x++)
-      led_panels_set_pixel(buffer, 0, x, y, pixel);
+    {
+      led_panels_set_pixel(front_buffer, 0, x, y, pixel_a);
+      led_panels_set_pixel(back_buffer, 0, x, y, pixel_b);
+    }
   }
-  for (uint8_t y = 0; y < 8; y++)
-  {
-    for (uint8_t x = 0; x < 8; x++)
-      led_panels_set_pixel(buffer, 1, x, y, pixel);
-  }
-
-  led_panels_send(buffer);
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  //led_panels_send(buffer);
+  uint32_t tick = HAL_GetTick();
+
+  led_panels_send(front_buffer);
 
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    
+    if (HAL_GetTick() - tick < 1000)
+      continue;
+    
+    led_panels_buffer *tmp = front_buffer;
+    front_buffer = back_buffer;
+    back_buffer = tmp;
+
+    tick = HAL_GetTick();
+
+    led_panels_send(front_buffer);
   }
   /* USER CODE END 3 */
 }
@@ -308,12 +334,12 @@ void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim)
 {
 	// HAL_TIM_PWM_Stop_DMA(&htim2, TIM_CHANNEL_1);
   // htim2.Instance->CCR1 = 0; // period
-  led_panels_send_complete(buffer);
+  led_panels_send_complete(front_buffer);
 }
 
 void HAL_TIM_PWM_PulseFinishedHalfCpltCallback(TIM_HandleTypeDef *htim)
 {
-  led_panels_half_send_complete(buffer);
+  led_panels_half_send_complete(front_buffer);
 }
 
 /* USER CODE END 4 */

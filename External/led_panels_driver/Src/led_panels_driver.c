@@ -22,8 +22,6 @@ typedef struct
 
 // Static variables ----------------------------------------------------------
 
-static test = 0;
-
 // Static functions ----------------------------------------------------------
 
 __attribute__((always_inline))
@@ -79,35 +77,12 @@ inline static void set_pixels_to_pwm_data(
   *index += 3;
 }
 
-// static void convert_pwm_data_to_color(
-//   const uint8_t *const pwm_data,
-//   uint8_t *const color
-// )
-// {
-//   for (uint8_t i = 0; i < 8; i++)
-//   {
-//     *color |= (
-//       *(pwm_data + (7 - i)) == LED_PANELS_1_VALUE ? 1U : 0U
-//     ) << i;
-//   }
-// }
-
 __attribute__((always_inline))
 inline static uint16_t get_side_size(uint16_t size)
 {
   static const uint8_t sides_sizes[] = { 8U, 16U };
   return sides_sizes[size >> 8]; // size / 256
 }
-
-// static void convert_pwm_data_to_pixel(
-//   uint8_t *const pwm_data,
-//   led_panels_color *const pixel
-// )
-// {
-//   convert_pwm_data_to_color(pwm_data, &pixel->green);
-//   convert_pwm_data_to_color(pwm_data + 8, &pixel->red);
-//   convert_pwm_data_to_color(pwm_data + 16, &pixel->blue);
-// }
 
 static void get_pixel_from_data(
   uint8_t *const pixel_data,
@@ -129,28 +104,6 @@ static void get_pixel_from_data(
     color->blue = *(current_pixel_data + 1) & 0x0f;
   }
 }
-
-// static void convert_pixel_to_pwm_data(
-//   uint8_t *const pwm_data,
-//   led_panels_color *const pixel
-// )
-// {
-//   convert_color_to_pwm_data(pwm_data, &pixel->green);
-//   convert_color_to_pwm_data(pwm_data + 8, &pixel->red);
-//   convert_color_to_pwm_data(pwm_data + 16, &pixel->blue);
-// }
-
-// static void convert_color_to_data(
-//   uint8_t *const pixel_data,
-//   uint8_t color,
-//   uint16_t byte_offset,
-//   uint8_t bit
-// )
-// {
-//   convert_color_to_pwm_data(pwm_data, &pixel->green);
-//   convert_color_to_pwm_data(pwm_data + 8, &pixel->red);
-//   convert_color_to_pwm_data(pwm_data + 16, &pixel->blue);
-// }
 
 static void add_pixel_to_data(
   uint8_t *const pixel_data,
@@ -177,20 +130,6 @@ static void add_pixel_to_data(
   }
 }
 
-// static uint16_t get_panel_offset(
-//   uint8_t panel_index,
-//   led_panels_size *panels_sizes
-// )
-// {
-//   uint16_t pixels_offset = 0U;
-
-//   uint8_t i = 0;
-//   for (; i < panel_index; i++)
-//   pixels_offset += GET_PANEL_SIZE(i, panels_sizes);
-
-//   return pixels_offset * PWM_PIXEL_SIZE;
-// }
-
 static uint16_t get_panel_offset(
   uint8_t panel_index,
   led_panels_size *panels_sizes
@@ -203,22 +142,6 @@ static uint16_t get_panel_offset(
 
   return (uint16_t)(pixels_offset * 1.5f);
 }
-
-// static uint16_t get_pixel_offset(
-//   uint8_t panel_index,
-//   led_panels_size *panels_sizes,
-//   uint8_t x,
-//   uint8_t y
-// )
-// {
-//   uint16_t side_size = get_side_size(
-//     GET_PANEL_SIZE(panel_index, panels_sizes)
-//   );
-
-//   // Correction for LED tape trajectory - every even line is inverted
-//   uint16_t pixel_pos = (y % 2 == 0 ? (side_size - 1 - x) : x) + y * side_size;
-//   return pixel_pos * PWM_PIXEL_SIZE;
-// }
 
 static led_panels_pixel_pos get_pixel_offset(
   uint8_t panel_index,
@@ -236,35 +159,12 @@ static led_panels_pixel_pos get_pixel_offset(
 
   uint16_t pixel_num = pos_x + y * side_size;
   bool is_odd = pixel_num % 2 == 1;
-  //return pixel_pos * PWM_PIXEL_SIZE;
 
   return (led_panels_pixel_pos) {
     .byte_offset = (pixel_num / 2) * 3 + (uint16_t)is_odd,
     .is_first = is_odd ? false : true
   };
 }
-
-// static uint16_t get_pwm_data_size(led_panels_buffer *buffer)
-// {
-//   uint16_t result = 0U;
-
-//   uint8_t i = 0;
-//   for (; i < buffer->panels_num; i++)
-//     result += GET_PANEL_SIZE(i, buffer->panels_sizes);
-
-//   return result * 3 * 8 + 50; 
-// }
-
-// static uint16_t get_pixel_data_size(led_panels_buffer *buffer)
-// {
-//   uint16_t result = 0U;
-
-//   uint8_t i = 0;
-//   for (; i < buffer->panels_num; i++)
-//     result += GET_PANEL_SIZE(i, buffer->panels_sizes);
-
-//   return (uint16_t)(result * 1.5f) + 50; 
-// }
 
 static led_panels_status check_bounds(
   led_panels_buffer *buffer,
@@ -311,19 +211,8 @@ led_panels_buffer *led_panels_create(
   buffer->pwm_data = malloc(96); // 4 pixels
   memset(buffer->pwm_data, LED_PANELS_0_VALUE, 96 * sizeof(uint8_t));
 
-  //uint16_t total_size = (uint16_t)(pixels_num * 1.5f) + 50;
-  buffer->pixel_data_size = (uint16_t)(pixels_num * 1.5f) + 50;
+  buffer->pixel_data_size = (uint16_t)(pixels_num * 1.5f);
   buffer->pixel_data = malloc(buffer->pixel_data_size);
-  // memset(
-  //   buffer->pwm_data + (buffer->pixel_data_size - 50),
-  //   LED_PANELS_RESET_VALUE,
-  //   50 * sizeof(uint8_t)
-  // ); // reset (above 50 us)
-  memset(
-    buffer->pixel_data + (buffer->pixel_data_size - 50),
-    0,
-    buffer->pixel_data_size
-  ); // reset (above 50 us)
   led_panels_flush(buffer);
 
   return buffer;
@@ -361,11 +250,6 @@ led_panels_status led_panels_get_pixel(
     panel_index,
     buffer->panels_sizes
   );
-  // uint8_t *panel = buffer->pwm_data + panel_offset;
-  // uint16_t pwm_positions_offset = pixel_x * 3 + 
-  //   (pixel_y * 3 * (uint16_t)buffer->panels_sizes[panel_index]);
-
-  //convert_pwm_data_to_pixel(panel + pwm_positions_offset, pixel);
 
   led_panels_pixel_pos pixel_pos = get_pixel_offset(
     panel_index,
@@ -403,12 +287,7 @@ led_panels_status led_panels_set_pixel(
     panel_index,
     buffer->panels_sizes
   );
-  // uint16_t pixel_offset = get_pixel_offset(
-  //   panel_index,
-  //   buffer->panels_sizes,
-  //   pixel_x,
-  //   pixel_y
-  // );
+
   led_panels_pixel_pos pixel_pos = get_pixel_offset(
     panel_index,
     buffer->panels_sizes,
@@ -416,10 +295,6 @@ led_panels_status led_panels_set_pixel(
     pixel_y
   );
 
-  // convert_pixel_to_pwm_data(
-  //   buffer->pwm_data + panel_offset + pixel_offset,
-  //   (led_panels_color *const)&pixel
-  // );
   add_pixel_to_data(
     buffer->pixel_data + panel_offset,
     &pixel_pos,
@@ -434,15 +309,10 @@ led_panels_status led_panels_flush(led_panels_buffer *buffer)
   if (buffer->is_locking)
     return LED_PANELS_BUSY;
 
-  // memset(
-  //   buffer->pwm_data,
-  //   LED_PANELS_0_VALUE,
-  //   get_pwm_data_size(buffer) - 50
-  // );
   memset(
     buffer->pixel_data,
     0,
-    buffer->pixel_data_size - 50
+    buffer->pixel_data_size
   );
 
   return LED_PANELS_OK;
@@ -453,13 +323,12 @@ led_panels_status led_panels_send(led_panels_buffer *buffer)
   if (buffer->is_locking)
     return LED_PANELS_BUSY;
 
-    // First part of pwm data
+  // First part of pwm data
   set_pixels_to_pwm_data(
     buffer->pwm_data,
     buffer->pixel_data,
     &buffer->transmit_index
   );
-  //buffer->transmit_index += 3; // 2 pixels = 3 bytes
 
   // Second part of pwm data
   set_pixels_to_pwm_data(
@@ -467,7 +336,6 @@ led_panels_status led_panels_send(led_panels_buffer *buffer)
     buffer->pixel_data,
     &buffer->transmit_index
   );
-  //buffer->transmit_index += 3; // 2 pixels = 3 bytes
 
   led_panels_status status = led_panels_io_send_data(
     buffer->pwm_data,
@@ -482,22 +350,22 @@ led_panels_status led_panels_send(led_panels_buffer *buffer)
 
 void led_panels_send_complete(led_panels_buffer *buffer)
 {
-  if (buffer->transmit_index >= buffer->pixel_data_size - 50)
-  //if (buffer->transmit_index >= 6)
+  if (buffer->transmit_index > buffer->pixel_data_size)
   {
     led_panels_io_stop_sending_data();
     buffer->is_locking = false;
     buffer->transmit_index = 0;
-    if (test)
-      return;
+    memset(buffer->pwm_data, LED_PANELS_0_VALUE, 96 * sizeof(uint8_t));
     return;
   }
 
-  //led_panels_io_reset();
-  // led_panels_io_send_data(
-  //   buffer->pwm_data,
-  //   96 * sizeof(uint8_t)
-  // );
+  // Reset (above 50 us)
+  if (buffer->transmit_index >= buffer->pixel_data_size)
+  {
+    memset(buffer->pwm_data + 48, LED_PANELS_RESET_VALUE, 48 * sizeof(uint8_t));
+    buffer->transmit_index += 6;
+    return;
+  }
 
   // Second part of pwm data
   set_pixels_to_pwm_data(
@@ -505,15 +373,16 @@ void led_panels_send_complete(led_panels_buffer *buffer)
     buffer->pixel_data,
     &buffer->transmit_index
   );
-
-  test++;
 }
 
 void led_panels_half_send_complete(led_panels_buffer *buffer)
 {
-  if (buffer->transmit_index >= buffer->pixel_data_size - 50)
-  //if (buffer->transmit_index >= 6)
+  // Reset (above 50 us)
+  if (buffer->transmit_index >= buffer->pixel_data_size)
+  {
+    memset(buffer->pwm_data, LED_PANELS_RESET_VALUE, 48 * sizeof(uint8_t));
     return;
+  }
 
   // First part of pwm data
   set_pixels_to_pwm_data(
