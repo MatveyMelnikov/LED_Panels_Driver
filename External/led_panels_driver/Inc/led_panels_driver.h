@@ -34,7 +34,7 @@ led_panels_status led_panels_flush(
   led_panels_buffer *buffer
 );
 led_panels_status led_panels_send(led_panels_buffer *buffer);
-void led_panels_copy_pwm_data(
+void led_panels_copy_data(
   led_panels_buffer *target,
   led_panels_buffer *source
 );
