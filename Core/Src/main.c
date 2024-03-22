@@ -49,7 +49,6 @@ UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 TIM_HandleTypeDef *led_panels_tim = &htim2;
-DMA_HandleTypeDef *led_panels_dma = &hdma_tim2_ch1;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/

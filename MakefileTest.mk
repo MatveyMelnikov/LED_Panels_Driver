@@ -30,12 +30,12 @@ $(LED_PANELS_DRIVER)/Src/led_panels_io.c
 include MakefileTestTarget.mk
 else
 C_INCLUDES += \
--I$(TESTS_DIR)/mocks/Inc
+-I$(TESTS_DIR)/fakes/Inc
 C_SOURCES += \
 $(TESTS_DIR)/host_tests.c \
 $(TESTS_DIR)/host_tests/led_panels_driver/led_panels_test_runner.c \
 $(TESTS_DIR)/host_tests/led_panels_driver/led_panels_test.c \
-$(TESTS_DIR)/mocks/Src/mock_led_panels_io.c
+$(TESTS_DIR)/fakes/Src/fake_led_panels_io.c
 
 include MakefileTestHost.mk
 endif

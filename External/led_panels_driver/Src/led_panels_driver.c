@@ -85,13 +85,6 @@ inline static void set_pixels_to_pwm_data(
   *index += 3;
 }
 
-__attribute__((always_inline))
-inline static uint16_t get_side_size(uint16_t size)
-{
-  static const uint8_t sides_sizes[] = { 8U, 16U };
-  return sides_sizes[size >> 8]; // size / 256
-}
-
 static void get_pixel_from_data(
   uint8_t *const pixel_data,
   led_panels_pixel_pos *const pixel_pos,

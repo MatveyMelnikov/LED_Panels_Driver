@@ -7,13 +7,13 @@ static void delay()
 {
   int32_t count = 10000000;
   while (count--) {
-    asm(""); // prevent optimize of this function
+    __asm__(""); // prevent optimize of this function
   }
 }
 
 // Static variables ----------------------------------------------------------
 
-static led_panels_buffer *buffer = NULL;
+extern led_panels_buffer *buffer;
 
 static led_panels_color red_pixel = (led_panels_color) {
   .red = 1U,

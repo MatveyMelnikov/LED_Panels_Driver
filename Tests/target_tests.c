@@ -3,12 +3,16 @@
 #include <stddef.h>
 #include "unity_config.h"
 #include "unity_fixture.h"
+#include "led_panels_defs.h"
 
 UART_HandleTypeDef huart1; // usb
 TIM_HandleTypeDef htim2;
 DMA_HandleTypeDef hdma_tim2_ch1;
 
 TIM_HandleTypeDef *led_panels_tim = &htim2;
+
+// For led_panels_test
+led_panels_buffer *buffer = NULL;
 
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
@@ -130,7 +134,12 @@ static void MX_GPIO_Init(void)
 
 void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim)
 {
-	HAL_TIM_PWM_Stop_DMA(&htim2, TIM_CHANNEL_1);
+  led_panels_send_complete(buffer);
+}
+
+void HAL_TIM_PWM_PulseFinishedHalfCpltCallback(TIM_HandleTypeDef *htim)
+{
+  led_panels_half_send_complete(buffer);
 }
 
 static void run_all_tests()

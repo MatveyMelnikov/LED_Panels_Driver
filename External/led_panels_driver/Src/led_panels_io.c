@@ -2,7 +2,6 @@
 #include "stm32f1xx.h"
 
 extern TIM_HandleTypeDef *led_panels_tim;
-extern DMA_HandleTypeDef *led_panels_dma;
 
 led_panels_status led_panels_io_send_data(
   const uint8_t *const data,

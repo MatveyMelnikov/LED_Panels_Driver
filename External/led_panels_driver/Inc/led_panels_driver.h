@@ -4,6 +4,13 @@
 #include <stdint.h>
 #include "led_panels_defs.h"
 
+__attribute__((always_inline))
+inline static uint16_t get_side_size(uint16_t size)
+{
+  static const uint8_t sides_sizes[] = { 8U, 16U };
+  return sides_sizes[size >> 8]; // size / 256
+}
+
 led_panels_buffer *led_panels_create(
   uint8_t panels_num,
   const led_panels_size *const panels_sizes
