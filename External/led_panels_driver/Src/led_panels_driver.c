@@ -349,6 +349,18 @@ led_panels_status led_panels_send(led_panels_buffer *buffer)
   return status;
 }
 
+void led_panels_copy_pwm_data(
+  led_panels_buffer *target,
+  led_panels_buffer *source
+)
+{
+  memcpy(
+    target->pwm_data,
+    source->pwm_data,
+    target->pixel_data_size
+  );
+}
+
 void led_panels_send_complete(led_panels_buffer *buffer)
 {
   if (buffer->transmit_index > buffer->pixel_data_size)

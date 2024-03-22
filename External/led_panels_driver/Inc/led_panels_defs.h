@@ -2,6 +2,7 @@
 #define LED_PANELS_DEFS_H
 
 #include <stdbool.h>
+#include <stdint.h>
 
 enum
 {
@@ -12,6 +13,7 @@ enum
 
 typedef enum
 {
+  LED_PANELS_UNKNOWN = 0U,
   LED_PANELS_SIZE_64 = 64U,
   LED_PANELS_SIZE_256 = 256U
 } led_panels_size;
